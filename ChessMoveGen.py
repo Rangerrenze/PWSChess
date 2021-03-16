@@ -8,6 +8,8 @@ import random
 # import Algorithm
 
 
+
+
 class MoveGeneration():
     def __init__(self):
         self.moveFunctions = {'p': self.getPawnMoves, 'R': self.getRookMoves, 'N': self.getKnightMoves,
@@ -434,14 +436,16 @@ class MoveGeneration():
             self.getQueensideCastleMoves(r, c, moves)
 
     def getKingsideCastleMoves(self, r, c, moves):
-        if self.board[r][c+1] == '--' and self.board[r][c+2] == '--':
-            if not self.squareUnderAttack(r, c+1) and not self.squareUnderAttack(r, c+2):
-                moves.append(Move((r, c), (r, c+2), self.board, isCastleMove=True))
+        if not c >= 6:
+            if self.board[r][c+1] == '--' and self.board[r][c+2] == '--':
+                if not self.squareUnderAttack(r, c+1) and not self.squareUnderAttack(r, c+2):
+                    moves.append(Move((r, c), (r, c+2), self.board, isCastleMove=True))
 
     def getQueensideCastleMoves(self, r, c, moves):
-        if self.board[r][c-1] == '--' and self.board[r][c-2] == '--' and self.board[r][c-3] == '--':
-            if not self.squareUnderAttack(r, c-1) and not self.squareUnderAttack(r, c-2):
-                moves.append(Move((r, c), (r, c-2), self.board, isCastleMove=True))
+        if not c < 3:
+            if self.board[r][c-1] == '--' and self.board[r][c-2] == '--' and self.board[r][c-3] == '--':
+                if not self.squareUnderAttack(r, c-1) and not self.squareUnderAttack(r, c-2):
+                    moves.append(Move((r, c), (r, c-2), self.board, isCastleMove=True))
 
     def getQueenMoves(self, r, c, moves, whiteForcedCaptures, blackForcedCaptures):
         self.getRookMoves(r, c, moves, whiteForcedCaptures, blackForcedCaptures)
