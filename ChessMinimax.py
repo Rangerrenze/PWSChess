@@ -33,134 +33,76 @@ class AI():
             ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
             ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"]])
 
+        self.whitePawnPositionValue = [
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5],
+            [1.1, 1.1, 1.2, 1.3, 1.3, 1.2, 1.1, 1.],
+            [1.05, 1.05, 1.1, 1.25, 1.25, 1.1, 1.05, 1.05],
+            [1, 1, 1, 1.5, 1.5, 1, 1, 1],
+            [1.05, 0.95, 0.9, 1.05, 1.05, 0.9, 0.95, 1.05],
+            [1.05, 1.1, 1.1, 0.8, 0.8, 1.1, 1.1, 1.05],
+            [1, 1, 1, 1, 1, 1, 1, 1]]
 
-    def minimax(self, board, depth, OGDepth, maxPlayer, WhitetoMove, alpha, beta):
-        if depth == OGDepth:
-            self.whiteToTurnRight = WhitetoMove
-        board = np.copy(board)
-        self.WhitetoMove = WhitetoMove
-        if depth == 0 or self.gameOver:
-            return None, self.evaluateBoard(board, self.whiteToTurnRight)
-        moveGen = ChessMoveGen.MoveGeneration().getMoves(board, self.WhitetoMove, True, self.castlingCopy)
-        moves = moveGen[0]
-        if not len(moves) >= 1:
-            return None, self.evaluateBoard(board, self.WhitetoMove)
-        gameOver = moveGen[1]
-        bestMove = random.choice(moves)
-        if gameOver:
-            self.gameOver = True
-        if maxPlayer:
-            maxEval = -math.inf
-            for move in moves:
-                if move == "None Moves" or move == None:
-                    break
-                board, previousboard = self.makeMove(move, board)
-                currentEval = self.minimax(board, depth -1, OGDepth, False, self.WhitetoMove, alpha, beta)[1]
-                self.WhitetoMove = not self.WhitetoMove
-                if ChessMain.castleRule:
-                    self.castleRightLog.pop()
-                    newRights = self.castleRightLog[-1]
-                    self.currentCastlingRights = castleRights(newRights.wks, newRights.wqs, newRights.bks, newRights.bqs)
-                    if self.previousCastleMove:
-                        if move.endCol - move.startCol == 2:
-                            previousboard[move.endRow][move.endCol + 1] = previousboard[move.endRow][move.endCol - 1]
-                            previousboard[move.endRow][move.endCol - 1] = "--"
-                        else:
-                            previousboard[move.endRow][move.endCol - 2] = previousboard[move.endRow][move.endCol + 1]
-                            previousboard[move.endRow][move.endCol + 1] = "--"
-                board = previousboard
+        self.blackPawnPositionValue = [
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1.05, 1.1, 1.1, 0.8, 0.8, 1.1, 1.1, 1.05],
+            [1.05, 0.95, 0.9, 1.05, 1.05, 0.9, 0.95, 1.05],
+            [1, 1, 1, 1.5, 1.5, 1, 1, 1],
+            [1.05, 1.05, 1.1, 1.25, 1.25, 1.1, 1.05, 1.05],
+            [1.1, 1.1, 1.2, 1.3, 1.3, 1.2, 1.1, 1.],
+            [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5],
+            [1, 1, 1, 1, 1, 1, 1, 1]]
 
+        self.KnightPositionValue = [
+            [0.5, 0.6, 0.7, 0.7, 0.7, 0.7, 0.6, 0.50],
+            [0.6, 0.8, 1, 1, 1, 1, 0.8, 0.6],
+            [0.7, 1, 1.1, 1.15, 1.15, 1.1, 1, 0.7],
+            [0.7, 1.05, 1.15, 1.2, 1.2, 1.15, 1.05, 0.7],
+            [0.7, 1.05, 1.15, 1.2, 1.2, 1.15, 1.05, 0.7],
+            [0.7, 1, 1.1, 1.15, 1.15, 1.1, 1, 0.7],
+            [0.6, 0.8, 1, 1, 1, 1, 0.8, 0.6],
+            [-50, -40, -30, -30, -30, -30, -40, -50]]
 
-                if currentEval > maxEval:
-                    maxEval = currentEval
-                    bestMove = move
-                alpha = max(alpha, currentEval)
-                if alpha <= beta:
-                    break
-            return bestMove, maxEval
-        else:
-            minEval = math.inf
-            for move in moves:
-                if move == "None Moves" or move == None:
-                    break
-                board, previousboard = self.makeMove(move, board)
-                currentEval = self.minimax(board, depth -1, OGDepth, True, self.WhitetoMove, alpha, beta)[1]
-                self.WhitetoMove = not self.WhitetoMove
-                if ChessMain.castleRule:
-                    self.castleRightLog.pop()
-                    newRights = self.castleRightLog[-1]
-                    self.currentCastlingRights = castleRights(newRights.wks, newRights.wqs, newRights.bks, newRights.bqs)
-                    if self.previousCastleMove:
-                        if move.endCol - move.startCol == 2:
-                            previousboard[move.endRow][move.endCol + 1] = previousboard[move.endRow][move.endCol - 1]
-                            previousboard[move.endRow][move.endCol - 1] = "--"
-                        else:
-                            previousboard[move.endRow][move.endCol - 2] = previousboard[move.endRow][move.endCol + 1]
-                            previousboard[move.endRow][move.endCol + 1] = "--"
-                board = previousboard
-                if currentEval < minEval:
-                    minEval = currentEval
-                    bestMove = move
-                beta = min(beta, currentEval)
-                if beta <= alpha:
-                    break
-            return bestMove, minEval
+        self.BishopPositionValue = [
+            [0.8, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.8],
+            [0.9, 1, 1, 1, 1, 1, 1, 0.9],
+            [0.9, 1, 1.05, 1.1, 1.1, 1.05, 1, 0.9],
+            [0.9, 1.05, 1.05, 1.1, 1.1, 1.05, 1.05, 0.9],
+            [0.9, 1.05, 1.05, 1.1, 1.1, 1.05, 1.05, 0.9],
+            [0.9, 1, 1.05, 1.1, 1.1, 1.05, 1, 0.9],
+            [0.9, 1, 1, 1, 1, 1, 1, 0.9],
+            [0.8, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.8]]
 
+        self.RookPositionValue = [
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1.05, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.05],
+            [0.95, 1, 1, 1, 1, 1, 1, 0.95],
+            [0.95, 1, 1, 1, 1, 1, 1, 0.95],
+            [0.95, 1, 1, 1, 1, 1, 1, 0.95],
+            [0.95, 1, 1, 1, 1, 1, 1, 0.95],
+            [1.05, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.05],
+            [1, 1, 1, 5, 5, 1, 1, 1]]
 
+        self.QueenPositionValue = [
+            [0.8, 0.9, 0.9, 0.95, 0.95, 0.90, 0.9, 0.8],
+            [0.9, 1, 1, 1, 1, 1, 1, 0.9],
+            [0.9, 1, 1.5, 1.5, 1.5, 1.5, 1, 0.9],
+            [0.95, 1, 1.5, 1.5, 1.5, 1.5, 1, 0.95],
+            [0.95, 1, 1.5, 1.5, 1.5, 1.5, 1, 0.95],
+            [0.9, 1, 1.5, 1.5, 1.5, 1.5, 1, 0.9],
+            [0.9, 1, 1, 1, 1, 1, 1, 0.9],
+            [0.8, 0.9, 0.9, 0.95, 0.95, 0.90, 0.9, 0.8]]
 
-    def makeMove(self, move, board):
-        tempboard = board
-        move = move
-        startrow = move.startRow
-        startcol = move.startCol
-        endrow = move.endRow
-        endcol = move.endCol
-        previousboard = copy.deepcopy(tempboard)
-        startpiece = tempboard[startrow][startcol]
-        tempboard[startrow][startcol] = "--"
-        if startpiece == "wp":
-            if endrow == 0:
-                tempboard[endrow][endcol] = "wQ"
-        elif startpiece == "bp":
-            if endrow == 7:
-                tempboard[endrow][endcol] = "bQ"
-        if ChessMain.castleRule:
-            if startpiece == "wK":
-                self.currentCastlingRights.wks = False
-                self.currentCastlingRights.wqs = False
-            elif startpiece == "bK":
-                self.currentCastlingRights.bks = False
-                self.currentCastlingRights.bqs = False
-            elif startpiece == "wR":
-                if startrow == 7:
-                    if move.startCol == 0:
-                        self.currentCastlingRights.wqs = False
-                    elif move.startCol == 7:
-                        self.currentCastlingRights.wks = False
-            elif startpiece == "bR":
-                if startrow == 0:
-                    if startcol == 0:
-                        self.currentCastlingRights.bqs = False
-                    elif startcol == 7:
-                        self.currentCastlingRights.bks = False
-            self.castleRightLog.append([castleRights(self.currentCastlingRights.wks, self.currentCastlingRights.wqs,
-                                                self.currentCastlingRights.bks, self.currentCastlingRights.bqs)])
-        if move.isCastleMove:
-            if endcol - startcol == 2:
-                tempboard[endrow][endcol-1] = tempboard[move.endRow][move.endCol+1]
-                tempboard[endrow][endcol+1] = "--"
-            else:
-                tempboard[endrow][endcol + 1] = tempboard[endrow][endcol -2]
-                tempboard[endrow][endcol -2] = "--"
-            self.previousCastleMove = True
-        else:
-            self.previousCastleMove = False
+        self.KingPositionValue = [
+            [1.2, 1.1, 1.1, 1.05, 1.05, 1.1, 1.2, 1.2],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1],
+            [1.2, 1.1, 1.1, 1.05, 1.05, 1.1, 1.2, 1.2]]
 
-
-
-        self.WhitetoMove = not self.WhitetoMove
-        self.castlingCopy = (self.currentCastlingRights.wks, self.currentCastlingRights.wqs, self.currentCastlingRights.bks, self.currentCastlingRights.bqs)
-        return tempboard, previousboard
 
 
 
@@ -177,79 +119,99 @@ class AI():
             for r in range(len(board)):
                 for c in range(len(board[r])):
                     piece = tempboard[r][c]
-                    if self.whiteToTurnRight:
+                    if whiteToTurnRight:
                         if piece[0] == "w":
                             if piece[1] == "K":
                                 boardvalue = boardvalue - 3
+                            if piece[1] == "Q":
+                                boardvalue = boardvalue - 3
+                            if piece[1] == "R":
+                                boardvalue = boardvalue - 3
                             if piece[1] == "N":
                                 boardvalue = boardvalue - 5
-                            if piece[1] == "R" or piece[1] == "B" or piece[1] == "Q":
-                                boardvalue = boardvalue - 4
+                            if piece[1] == "B":
+                                boardvalue = boardvalue - 3
                             if piece[1] == 'p':
                                 boardvalue = boardvalue - 1
                         if piece[0] == "b":
                             if piece[1] == "K":
                                 boardvalue = boardvalue + 3
-                            if piece[1] == "N":
-                                boardvalue = boardvalue + 5
-                            if piece[1] == "R" or piece[1] == "B" or piece[1] == "Q":
-                                boardvalue = boardvalue + 4
-                            if piece[1] == 'p':
-                                boardvalue = boardvalue + 1
-                        if EvaluateWhiteWin:
-                            boardvalue = boardvalue + 100000000000
-                        if EvaluateBlackWin:
-                            boardvalue = boardvalue - 100000000000
-                    else:
-                        if piece[0] == "w":
-                            if piece[1] == "K":
+                            if piece[1] == "Q":
+                                boardvalue = boardvalue + 3
+                            if piece[1] == "R":
                                 boardvalue = boardvalue + 3
                             if piece[1] == "N":
                                 boardvalue = boardvalue + 5
-                            if piece[1] == "R" or piece[1] == "B" or piece[1] == "Q":
-                                boardvalue = boardvalue + 4
+                            if piece[1] == "B":
+                                boardvalue = boardvalue + 3
                             if piece[1] == 'p':
                                 boardvalue = boardvalue + 1
-                        if piece[0] == "b":
-                            if piece[1] == "K":
-                                boardvalue = boardvalue - 3
-                            if piece[1] == "N":
-                                boardvalue = boardvalue - 5
-                            if piece[1] == "R" or piece[1] == "B" or piece[1] == "Q":
-                                boardvalue = boardvalue - 4
-                            if piece[1] == 'p':
-                                boardvalue = boardvalue - 1
                         if EvaluateWhiteWin:
-                            boardvalue = boardvalue - 100000000000
+                            boardvalue = boardvalue + math.inf
                         if EvaluateBlackWin:
-                            boardvalue = boardvalue + 100000000000
+                            boardvalue = boardvalue - math.inf
+                        else:
+                            if piece[0] == "w":
+                                if piece[1] == "K":
+                                    boardvalue = boardvalue + 3
+                                if piece[1] == "Q":
+                                    boardvalue = boardvalue + 3
+                                if piece[1] == "R":
+                                    boardvalue = boardvalue + 3
+                                if piece[1] == "N":
+                                    boardvalue = boardvalue + 5
+                                if piece[1] == "B":
+                                    boardvalue = boardvalue + 3
+                                if piece[1] == 'p':
+                                    boardvalue = boardvalue + 1
+                            if piece[0] == "b":
+                                if piece[1] == "K":
+                                    boardvalue = boardvalue - 3
+                                if piece[1] == "Q":
+                                    boardvalue = boardvalue - 3
+                                if piece[1] == "R":
+                                    boardvalue = boardvalue - 3
+                                if piece[1] == "N":
+                                    boardvalue = boardvalue - 5
+                                if piece[1] == "B":
+                                    boardvalue = boardvalue - 3
+                                if piece[1] == 'p':
+                                    boardvalue = boardvalue - 1
+                        if EvaluateWhiteWin:
+                            boardvalue = boardvalue - math.inf
+                        if EvaluateBlackWin:
+                            boardvalue = boardvalue + math.inf
         elif not ChessMain.antiChess:
             for r in range(len(board)):
                 for c in range(len(board[r])):
                     piece = tempboard[r][c]
-                    if self.whiteToTurnRight:
+                    if whiteToTurnRight:
                         if piece[0] == "w":
                             if piece[1] == "K":
-                                boardvalue = boardvalue + 100
+                                boardvalue = boardvalue + (10*self.KingPositionValue[r][c])
                             if piece[1] == "Q":
-                                boardvalue = boardvalue + 9
+                                boardvalue = boardvalue + (9*self.QueenPositionValue[r][c])
                             if piece[1] == "R":
-                                boardvalue = boardvalue + 5
-                            if piece[1] == "N" or piece[1] == "B":
-                                boardvalue = boardvalue + 3
+                                boardvalue = boardvalue + (5*self.RookPositionValue[r][c])
+                            if piece[1] == "N":
+                               boardvalue = boardvalue + (3*self.KnightPositionValue[r][c])
+                            if piece[1] == "B":
+                                boardvalue = boardvalue + (3*self.BishopPositionValue[r][c])
                             if piece[1] == 'p':
-                                boardvalue = boardvalue + 1
+                                boardvalue = boardvalue + (1*self.whitePawnPositionValue[r][c])
                         if piece[0] == "b":
                             if piece[1] == "K":
-                                boardvalue = boardvalue - 100
+                                boardvalue = boardvalue - (2*self.KingPositionValue[r][c])
                             if piece[1] == "Q":
-                                boardvalue = boardvalue - 9
+                                boardvalue = boardvalue - (180*self.QueenPositionValue[r][c])
                             if piece[1] == "R":
-                                boardvalue = boardvalue - 5
-                            if piece[1] == "N" or piece[1] == "B":
-                                boardvalue = boardvalue - 3
+                                boardvalue = boardvalue - (10*self.RookPositionValue[r][c])
+                            if piece[1] == "N":
+                                boardvalue = boardvalue - (6 * self.KnightPositionValue[r][c])
+                            if piece[1] == "B":
+                                boardvalue = boardvalue - (6 * self.BishopPositionValue[r][c])
                             if piece[1] == 'p':
-                                boardvalue = boardvalue - 1
+                                boardvalue = boardvalue - (2*self.whitePawnPositionValue[r][c])
                         if EvaluateWhiteWin:
                             boardvalue = boardvalue + 100000000000
                         if EvaluateBlackWin:
@@ -257,41 +219,36 @@ class AI():
                     else:
                         if piece[0] == "w":
                             if piece[1] == "K":
-                                boardvalue = boardvalue - 100
+                                boardvalue = boardvalue - (1*self.KingPositionValue[r][c])
                             if piece[1] == "Q":
-                                boardvalue = boardvalue - 9
+                                boardvalue = boardvalue - (9*self.QueenPositionValue[r][c])
                             if piece[1] == "R":
-                                boardvalue = boardvalue - 5
-                            if piece[1] == "N" or piece[1] == "B":
-                                boardvalue = boardvalue - 3
+                                boardvalue = boardvalue - (5*self.RookPositionValue[r][c])
+                            if piece[1] == "N":
+                                boardvalue = boardvalue - (3 * self.KnightPositionValue[r][c])
+                            if piece[1] == "B":
+                                boardvalue = boardvalue - (3 * self.BishopPositionValue[r][c])
                             if piece[1] == 'p':
-                                boardvalue = boardvalue - 1
+                                boardvalue = boardvalue - (1*self.whitePawnPositionValue[r][c])
                         if piece[0] == "b":
                             if piece[1] == "K":
-                                boardvalue = boardvalue + 100
+                                boardvalue = boardvalue + (2*self.KingPositionValue[r][c])
                             if piece[1] == "Q":
-                                boardvalue = boardvalue + 9
+                                boardvalue = boardvalue + (180*self.QueenPositionValue[r][c])
                             if piece[1] == "R":
-                                boardvalue = boardvalue + 5
-                            if piece[1] == "N" or piece[1] == "B":
-                                boardvalue = boardvalue + 3
+                                boardvalue = boardvalue + (10*self.RookPositionValue[r][c])
+                            if piece[1] == "N":
+                                boardvalue = boardvalue + (6 * self.KnightPositionValue[r][c])
+                            if piece[1] == "B":
+                                boardvalue = boardvalue + (6 * self.BishopPositionValue[r][c])
                             if piece[1] == 'p':
-                                boardvalue = boardvalue + 1
+                                boardvalue = boardvalue + (2*self.whitePawnPositionValue[r][c])
                         if EvaluateWhiteWin:
                             boardvalue = boardvalue - 100000000000
                         if EvaluateBlackWin:
                             boardvalue = boardvalue + 100000000000
-
-
-
-
         return boardvalue
 
-class castleRights():
-    def __init__(self, wks, bks, wqs, bqs):
-        self.wks = wks
-        self.bks = bks
-        self.wqs = wqs
-        self.bqs = bqs
+
 
 
