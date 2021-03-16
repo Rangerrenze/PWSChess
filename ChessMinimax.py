@@ -18,10 +18,6 @@ class AI():
         self.blackWIn = False
         self.previousCastleMove = False
         self.whiteToTurnRight = True
-        self.currentCastlingRights = castleRights(True, True, True, True)
-        self.castlingCopy = (True, True, True, True)
-        self.castleRightLog = [castleRights(self.currentCastlingRights.wks, self.currentCastlingRights.wqs,
-                                            self.currentCastlingRights.bks, self.currentCastlingRights.bqs)]
         self.castleRule = ChessMain.castleRule
         self.board = np.array([
             ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
@@ -248,6 +244,8 @@ class AI():
                         if EvaluateBlackWin:
                             boardvalue = boardvalue + 100000000000
         return boardvalue
+
+
 
 
 
