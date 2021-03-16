@@ -1,6 +1,7 @@
 import pygame as p
 import ChessMoveGen
 import ChessEngine
+import timeit
 
 WIDTH = HEIGHT = 512
 DIMENSION = 8
@@ -9,11 +10,11 @@ MAX_FPS = 15
 IMAGES = {}
 
 global blackAIrule, whiteAIrule, playerPlayingrule, castleRule, antiChess
-blackAIrule = True
-whiteAIrule = False
+blackAIrule = False
+whiteAIrule = True
 playerPlayingrule = True
-castleRule = False
-antiChess = False
+castleRule = True
+antiChess = True
 
 def loadImages():
     pieces = {'wp', 'wR', 'wN', 'wB', 'wK', 'wQ', 'bp', 'bR', 'bN', 'bB', 'bK', 'bQ'}
@@ -38,6 +39,10 @@ def main():
         gameOver = True
 
     while running:
+        drawGameState(screen, gs, validMoves, sqSelected)
+        clock.tick(MAX_FPS)
+
+        p.display.flip()
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
@@ -62,11 +67,15 @@ def main():
                                 print(validMoves)
                                 print(ChessMoveGen.Move.getChessnotation(move))
                                 print("ChessMain castling test", ChessEngine.GameState().castlingCopy)
+                                print("Speedtest start")
                                 gs.makeMove(validMoves[i])
                                 moveMade = True
                                 animate = True
                                 sqSelected = ()
                                 playerClicks = []
+                                drawGameState(screen, gs, validMoves, sqSelected)
+                                p.display.update()
+
                         if not moveMade:
                             playerClicks = [sqSelected]
             elif e.type == p.KEYDOWN:
@@ -120,10 +129,7 @@ def main():
             moveMade = False
             animate = False
 
-        drawGameState(screen, gs, validMoves, sqSelected)
 
-        clock.tick(MAX_FPS)
-        p.display.flip()
 
 def highlightSquares(screen, gs, validMoves, sqSelected):
     if not gs.gameOver:
