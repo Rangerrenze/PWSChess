@@ -35,6 +35,8 @@ class GameState ():
         self.castleRule = ChessMain.castleRule
         self.empassentPossible = False
         self.minimaxGameOver = False
+        self.whiteMinimax = 5
+        self.blackMinimax = 5
         self.OGTurnRight = True
         self.whitePawnPositionValue = [
             [1, 1, 1, 1, 1, 1, 1, 1],
@@ -62,7 +64,7 @@ class GameState ():
     def aiMove(self):
         if not self.WhiteToMove:
             start = timeit.timeit()
-            move = self.minimax(5, 5, True, math.inf, -math.inf)[0]
+            move = self.minimax(self.whiteMinimax, self.whiteMinimax, True, math.inf, -math.inf)[0]
             end = timeit.timeit()
             time = end-start
             print("Minimax time = ", time)
@@ -74,7 +76,7 @@ class GameState ():
                 return move
         if self.WhiteToMove:
             start = timeit.timeit()
-            move = self.minimax(5, 5, True, math.inf, -math.inf)[0]
+            move = self.minimax(self.blackMinimax, self.blackMinimax, True, math.inf, -math.inf)[0]
             end = timeit.timeit()
             time = end-start
             print("Minimax time = ", time)
