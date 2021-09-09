@@ -93,11 +93,11 @@ class GameState ():
         moves = moveGen[0]
         self.minimaxGameOver = moveGen[1]
         if depth == 0 or self.minimaxGameOver:
-            return None, ChessMinimax.AI().evaluateBoard(self.board, self.OGTurnRight)
+            return None, ChessMinimax.AI().evaluateBoard(self.board, self.OGTurnRight, self.castlingCopy)
         if len(moves) == 0:
-            return None, ChessMinimax.AI().evaluateBoard(self.board, self.OGTurnRight)
+            return None, ChessMinimax.AI().evaluateBoard(self.board, self.OGTurnRight, self.castlingCopy)
         if moves == None:
-            return None, ChessMinimax.AI().evaluateBoard(self.board, self.OGTurnRight)
+            return None, ChessMinimax.AI().evaluateBoard(self.board, self.OGTurnRight, self.castlingCopy)
         ri = random.randint(0, len(moves)-1)
         bestMove = moves[ri]
         if maxPlayer:

@@ -78,6 +78,8 @@ def main():
 
                         if not moveMade:
                             playerClicks = [sqSelected]
+                else:
+                    running = False
             elif e.type == p.KEYDOWN:
                 if e.key == p.K_z:
                     gs.undoMove()

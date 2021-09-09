@@ -19,6 +19,7 @@ class AI():
         self.previousCastleMove = False
         self.whiteToTurnRight = True
         self.castleRule = ChessMain.castleRule
+        self.castlingCopy = ()
         self.board = np.array([
             ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
             ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
@@ -103,10 +104,12 @@ class AI():
 
 
 
-    def evaluateBoard(self, board, whiteToTurnRight):
+    def evaluateBoard(self, board, whiteToTurnRight, castles):
         whiteToTurnRight = whiteToTurnRight
+        self.castlingCopy = castles
+        self.board = board
         boardvalue = 0
-        tempboard = copy.deepcopy(board)
+        tempboard = copy.deepcopy(self.board)
         moveGen = ChessMoveGen.MoveGeneration().getMoves(board, whiteToTurnRight, True, self.castlingCopy)
         EvaluateWhiteWin = moveGen[2]
         EvaluateBlackWin = moveGen[3]
@@ -178,6 +181,7 @@ class AI():
                         if EvaluateBlackWin:
                             boardvalue = boardvalue + math.inf
         elif not ChessMain.antiChess:
+            print("Normal chess minimax working as intended")
             for r in range(len(board)):
                 for c in range(len(board[r])):
                     piece = tempboard[r][c]
